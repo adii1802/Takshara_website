@@ -70,38 +70,16 @@ Message:
 ${message}
       `.trim(),
       html: `
-        <div style="font-family: Arial, sans-serif; max-width: 650px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
-          <div style="background-color: #003d9b; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;">
-            <h2 style="color: #ffffff; margin: 0; font-size: 22px;">Takshara Technologies Website Enquiry</h2>
-          </div>
-          <div style="padding: 24px; color: #1e293b;">
-            <p style="font-size: 16px; margin-top: 0;">You received a new message from the contact form:</p>
-            <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
-              <tr>
-                <td style="padding: 10px; font-weight: bold; width: 140px; border-bottom: 1px solid #f1f5f9;">Name:</td>
-                <td style="padding: 10px; border-bottom: 1px solid #f1f5f9;">${firstName} ${lastName}</td>
-              </tr>
-              <tr>
-                <td style="padding: 10px; font-weight: bold; border-bottom: 1px solid #f1f5f9;">Email:</td>
-                <td style="padding: 10px; border-bottom: 1px solid #f1f5f9;"><a href="mailto:${email}">${email}</a></td>
-              </tr>
-              <tr>
-                <td style="padding: 10px; font-weight: bold; border-bottom: 1px solid #f1f5f9;">Company:</td>
-                <td style="padding: 10px; border-bottom: 1px solid #f1f5f9;">${company || 'N/A'}</td>
-              </tr>
-              <tr>
-                <td style="padding: 10px; font-weight: bold; border-bottom: 1px solid #f1f5f9;">Inquiry Type:</td>
-                <td style="padding: 10px; border-bottom: 1px solid #f1f5f9; text-transform: capitalize;">${inquiryType || 'General'}</td>
-              </tr>
-            </table>
-            <div style="background-color: #f8fafc; padding: 16px; border-left: 4px solid #003d9b; border-radius: 4px; margin-top: 20px;">
-              <h4 style="margin: 0 0 8px 0; color: #003d9b;">Message:</h4>
-              <p style="margin: 0; white-space: pre-wrap; line-height: 1.6; color: #334155;">${message}</p>
-            </div>
-          </div>
-          <div style="padding: 16px; background-color: #f1f5f9; text-align: center; font-size: 12px; color: #64748b; border-radius: 0 0 8px 8px;">
-            Sent from Takshara Payments Website Contact Form
-          </div>
+        <div style="font-family: Arial, sans-serif; font-size: 15px; color: #222222; line-height: 1.6; max-width: 600px;">
+          <p><strong>You received a new inquiry from the website contact form:</strong></p>
+          <ul style="padding-left: 20px; color: #333333;">
+            <li><strong>Name:</strong> ${firstName} ${lastName}</li>
+            <li><strong>Email:</strong> <a href="mailto:${email}">${email}</a></li>
+            <li><strong>Company:</strong> ${company || 'N/A'}</li>
+            <li><strong>Inquiry Type:</strong> ${inquiryType || 'General'}</li>
+          </ul>
+          <p style="font-weight: bold; margin-bottom: 4px;">Message:</p>
+          <p style="white-space: pre-wrap; background-color: #f9f9f9; padding: 12px; border: 1px solid #eeeeee; border-radius: 4px; color: #333333;">${message}</p>
         </div>
       `,
     };
@@ -115,46 +93,48 @@ ${message}
         const autoReplyOptions = {
           from: `"Takshara Technologies" <${process.env.SMTP_USER}>`,
           to: email,
-          subject: `Thank you for contacting Takshara Technologies, ${firstName}!`,
-          text: `
-Dear ${firstName} ${lastName},
+          subject: `Thank you for contacting Takshara Technologies`,
+          text: `Dear ${firstName} ${lastName},
 
-Thank you for contacting Takshara Technologies! We have received your message regarding "${inquiryType || 'General Inquiry'}".
+Thank you for reaching out to Takshara Technologies. We have received your message regarding "${inquiryType || 'General Inquiry'}".
 
-Our team is reviewing your message and will get back to you as soon as possible (typically within 24 business hours).
+Our team is reviewing your inquiry and will get back to you as soon as possible (typically within 24 business hours).
 
-Summary of your submitted request:
+Summary of your message:
 - Name: ${firstName} ${lastName}
 - Company: ${company || 'N/A'}
-- Inquiry: ${inquiryType || 'General'}
+- Inquiry Type: ${inquiryType || 'General'}
 - Message: ${message}
 
-Best Regards,
-The Takshara Technologies Team
-business@taksharatechnologies.com
-          `.trim(),
+If you have any urgent questions, feel free to reply directly to this email or call us at +91 7089185703.
+
+Best regards,
+Takshara Technologies Team
+business@taksharatechnologies.com`,
           html: `
-            <div style="font-family: Arial, sans-serif; max-width: 650px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
-              <div style="background-color: #003d9b; padding: 24px; text-align: center; border-radius: 8px 8px 0 0;">
-                <h2 style="color: #ffffff; margin: 0; font-size: 22px;">Thank You for Reaching Out!</h2>
-                <p style="color: #dbeafe; margin: 8px 0 0 0; font-size: 14px;">Takshara Technologies</p>
-              </div>
-              <div style="padding: 24px; color: #1e293b;">
-                <p style="font-size: 16px; margin-top: 0;">Dear <strong>${firstName} ${lastName}</strong>,</p>
-                <p style="line-height: 1.6; color: #334155;">
-                  Thank you for contacting Takshara Technologies. We have received your inquiry and our team is currently reviewing your message. We aim to respond within 24 business hours.
-                </p>
-                <div style="background-color: #f8fafc; padding: 16px; border-left: 4px solid #003d9b; border-radius: 4px; margin: 20px 0;">
-                  <h4 style="margin: 0 0 8px 0; color: #003d9b;">Your Submitted Details:</h4>
-                  <p style="margin: 4px 0; font-size: 14px; color: #475569;"><strong>Inquiry Type:</strong> ${inquiryType || 'General'}</p>
-                  <p style="margin: 4px 0; font-size: 14px; color: #475569;"><strong>Company:</strong> ${company || 'N/A'}</p>
-                  <p style="margin: 4px 0; font-size: 14px; color: #475569;"><strong>Message:</strong> ${message}</p>
-                </div>
-                <p style="line-height: 1.6; color: #334155;">If you have any urgent questions, feel free to reply directly to this email or call us at <strong>+91 7089185703</strong>.</p>
-              </div>
-              <div style="padding: 16px; background-color: #f1f5f9; text-align: center; font-size: 12px; color: #64748b; border-radius: 0 0 8px 8px;">
-                © Takshara Technologies | Gwalior, Madhya Pradesh, India
-              </div>
+            <div style="font-family: Arial, sans-serif; font-size: 15px; color: #222222; line-height: 1.6; max-width: 600px;">
+              <p>Dear <strong>${firstName} ${lastName}</strong>,</p>
+              
+              <p>Thank you for reaching out to Takshara Technologies. We have received your message regarding <strong>${inquiryType || 'General Inquiry'}</strong>.</p>
+              
+              <p>Our team is reviewing your inquiry and will get back to you as soon as possible (typically within 24 business hours).</p>
+              
+              <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
+              
+              <p style="font-weight: bold; margin-bottom: 8px;">Summary of your submitted details:</p>
+              <ul style="padding-left: 20px; margin: 0 0 20px 0; color: #444444;">
+                <li><strong>Name:</strong> ${firstName} ${lastName}</li>
+                <li><strong>Company:</strong> ${company || 'N/A'}</li>
+                <li><strong>Inquiry Type:</strong> ${inquiryType || 'General'}</li>
+                <li><strong>Message:</strong> ${message}</li>
+              </ul>
+              
+              <p>If you have any urgent questions, feel free to reply directly to this email or call us at +91 7089185703.</p>
+              
+              <br />
+              <p style="margin: 0;">Best regards,</p>
+              <p style="margin: 0; font-weight: bold;">Takshara Technologies Team</p>
+              <p style="margin: 0; color: #666666;">business@taksharatechnologies.com</p>
             </div>
           `,
         };
