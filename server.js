@@ -16,13 +16,17 @@ app.use(express.json());
 // Transporter Configuration
 const createTransporter = () => {
   if (process.env.SMTP_USER && process.env.SMTP_PASS) {
+    const port = Number(process.env.SMTP_PORT) || 587;
     return nodemailer.createTransport({
       host: process.env.SMTP_HOST || 'smtp.gmail.com',
-      port: Number(process.env.SMTP_PORT) || 465,
-      secure: Number(process.env.SMTP_PORT || 465) === 465,
+      port: port,
+      secure: port === 465, // true for port 465, false for port 587 / 25
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
+      },
+      tls: {
+        rejectUnauthorized: false,
       },
     });
   }
@@ -47,11 +51,12 @@ app.post('/api/contact', async (req, res) => {
     }
 
     const transporter = createTransporter();
+    const senderEmail = process.env.SMTP_USER || email;
 
     const mailOptions = {
-      from: `"${firstName} ${lastName}" <${email}>`,
+      from: `"${firstName} ${lastName} (via Website Form)" <${senderEmail}>`,
       to: RECIPIENT_EMAIL,
-      replyTo: email,
+      replyTo: `"${firstName} ${lastName}" <${email}>`,
       subject: `New Website Enquiry from ${firstName} ${lastName}`,
       text: `
 New Enquiry from Takshara Technologies Website:
@@ -102,7 +107,63 @@ ${message}
     };
 
     const info = await transporter.sendMail(mailOptions);
-    console.log(`[Contact Form] Email sent successfully to ${RECIPIENT_EMAIL}:`, info.messageId || 'Success');
+    console.log(`[Contact Form] Admin notification email sent successfully to ${RECIPIENT_EMAIL}:`, info.messageId || 'Success');
+
+    // Send confirmation auto-reply email to the user if SMTP credentials are active
+    if (process.env.SMTP_USER && process.env.SMTP_PASS && email) {
+      try {
+        const autoReplyOptions = {
+          from: `"Takshara Technologies" <${process.env.SMTP_USER}>`,
+          to: email,
+          subject: `Thank you for contacting Takshara Technologies, ${firstName}!`,
+          text: `
+Dear ${firstName} ${lastName},
+
+Thank you for contacting Takshara Technologies! We have received your message regarding "${inquiryType || 'General Inquiry'}".
+
+Our team is reviewing your message and will get back to you as soon as possible (typically within 24 business hours).
+
+Summary of your submitted request:
+- Name: ${firstName} ${lastName}
+- Company: ${company || 'N/A'}
+- Inquiry: ${inquiryType || 'General'}
+- Message: ${message}
+
+Best Regards,
+The Takshara Technologies Team
+business@taksharatechnologies.com
+          `.trim(),
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 650px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
+              <div style="background-color: #003d9b; padding: 24px; text-align: center; border-radius: 8px 8px 0 0;">
+                <h2 style="color: #ffffff; margin: 0; font-size: 22px;">Thank You for Reaching Out!</h2>
+                <p style="color: #dbeafe; margin: 8px 0 0 0; font-size: 14px;">Takshara Technologies</p>
+              </div>
+              <div style="padding: 24px; color: #1e293b;">
+                <p style="font-size: 16px; margin-top: 0;">Dear <strong>${firstName} ${lastName}</strong>,</p>
+                <p style="line-height: 1.6; color: #334155;">
+                  Thank you for contacting Takshara Technologies. We have received your inquiry and our team is currently reviewing your message. We aim to respond within 24 business hours.
+                </p>
+                <div style="background-color: #f8fafc; padding: 16px; border-left: 4px solid #003d9b; border-radius: 4px; margin: 20px 0;">
+                  <h4 style="margin: 0 0 8px 0; color: #003d9b;">Your Submitted Details:</h4>
+                  <p style="margin: 4px 0; font-size: 14px; color: #475569;"><strong>Inquiry Type:</strong> ${inquiryType || 'General'}</p>
+                  <p style="margin: 4px 0; font-size: 14px; color: #475569;"><strong>Company:</strong> ${company || 'N/A'}</p>
+                  <p style="margin: 4px 0; font-size: 14px; color: #475569;"><strong>Message:</strong> ${message}</p>
+                </div>
+                <p style="line-height: 1.6; color: #334155;">If you have any urgent questions, feel free to reply directly to this email or call us at <strong>+91 7089185703</strong>.</p>
+              </div>
+              <div style="padding: 16px; background-color: #f1f5f9; text-align: center; font-size: 12px; color: #64748b; border-radius: 0 0 8px 8px;">
+                © Takshara Technologies | Gwalior, Madhya Pradesh, India
+              </div>
+            </div>
+          `,
+        };
+        await transporter.sendMail(autoReplyOptions);
+        console.log(`[Contact Form] Confirmation auto-reply email sent to ${email}`);
+      } catch (replyErr) {
+        console.warn('[Contact Form Auto-reply Error]:', replyErr.message);
+      }
+    }
 
     return res.status(200).json({
       success: true,
