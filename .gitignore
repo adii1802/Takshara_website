@@ -1,15 +1,22 @@
 # dependencies
 node_modules/
+**/node_modules/
 
 # build output
 dist/
+**/dist/
 build/
+**/build/
 
 # environment files
 .env
+**/.env
 .env.local
+**/.env.local
 .env.development.local
+**/.env.development.local
 .env.production.local
+**/.env.production.local
 
 # logs
 npm-debug.log*
