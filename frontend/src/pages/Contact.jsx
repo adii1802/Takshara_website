@@ -26,7 +26,11 @@ export default function Contact() {
     setErrorMsg('');
 
     try {
-      const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/contact';
+      const rawApiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/contact';
+      const backendUrl = rawApiUrl.includes('/api/contact')
+        ? rawApiUrl
+        : `${rawApiUrl.replace(/\/$/, '')}/api/contact`;
+
       const response = await fetch(backendUrl, {
         method: 'POST',
         headers: {
@@ -56,7 +60,7 @@ export default function Contact() {
       }
     } catch (err) {
       console.error('Contact form submission error:', err);
-      setErrorMsg('Could not connect to server. Please ensure the backend server is running on http://localhost:5000');
+      setErrorMsg('Could not connect to backend server. Please check network or VITE_API_URL configuration.');
     } finally {
       setIsSubmitting(false);
     }
