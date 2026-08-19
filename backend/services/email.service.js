@@ -2,20 +2,27 @@ import nodemailer from 'nodemailer';
 
 const getRecipientEmail = () => process.env.EMAIL_TO || 'business@taksharatechnologies.com';
 
-const createTransporter = () => {
+const createTransporter = (overridePort = null) => {
   if (process.env.SMTP_USER && process.env.SMTP_PASS) {
-    const port = Number(process.env.SMTP_PORT) || 587;
+    const rawPort = overridePort || Number(process.env.SMTP_PORT) || 587;
+    const port = rawPort;
+    const secure = port === 465;
+
     return nodemailer.createTransport({
       host: process.env.SMTP_HOST || 'smtp.gmail.com',
       port: port,
-      secure: port === 465, // true for port 465, false for port 587 / 25
-      family: 4, // Force IPv4 to prevent ENETUNREACH errors on cloud hosting (Render)
+      secure: secure,
+      family: 4, // Prefer IPv4 to prevent ENETUNREACH errors on cloud hosting (Render)
+      connectionTimeout: 10000, // 10s connection timeout
+      greetingTimeout: 10000,
+      socketTimeout: 15000,
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
       },
       tls: {
         rejectUnauthorized: false,
+        ciphers: 'SSLv3',
       },
     });
   }
@@ -29,7 +36,6 @@ const createTransporter = () => {
 export const sendContactEmail = async (contactData) => {
   const { firstName, lastName, email, company, inquiryType, message } = contactData;
   const recipientEmail = getRecipientEmail();
-  const transporter = createTransporter();
   const senderEmail = process.env.SMTP_USER || email;
 
   const mailOptions = {
@@ -63,7 +69,23 @@ ${message}
     `,
   };
 
-  const info = await transporter.sendMail(mailOptions);
+  let transporter = createTransporter();
+  let info;
+
+  try {
+    info = await transporter.sendMail(mailOptions);
+  } catch (primaryErr) {
+    // Fallback: If port 465 timed out or failed on Render, retry automatically using port 587
+    if (primaryErr.code === 'ETIMEDOUT' || primaryErr.code === 'ESOCKET' || primaryErr.command === 'CONN') {
+      console.warn('[Contact Form] Primary SMTP connection failed. Retrying with fallback port 587 (STARTTLS)...');
+      const fallbackTransporter = createTransporter(587);
+      info = await fallbackTransporter.sendMail(mailOptions);
+      transporter = fallbackTransporter;
+    } else {
+      throw primaryErr;
+    }
+  }
+
   console.log(`[Contact Form] Admin notification email sent successfully to ${recipientEmail}:`, info.messageId || 'Success');
 
   // Send confirmation auto-reply email to the user if SMTP credentials are active
