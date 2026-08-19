@@ -9,16 +9,51 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const RECIPIENT_EMAIL = process.env.EMAIL_TO || 'business@taksharatechnologies.com';
 
-// Middleware
-const allowedOrigins = process.env.FRONTEND_URL
-  ? [process.env.FRONTEND_URL, 'http://localhost:5173', 'http://localhost:3000', 'http://localhost:5000']
-  : '*';
+// Dynamic CORS configuration for production (Render + Vercel) and local dev
+const getCorsOrigins = () => {
+  if (!process.env.FRONTEND_URL || process.env.FRONTEND_URL === '*') {
+    return '*';
+  }
+
+  const envOrigins = process.env.FRONTEND_URL
+    .split(',')
+    .map(url => url.trim().replace(/\/$/, ''))
+    .filter(Boolean);
+
+  const localOrigins = [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'http://localhost:5000',
+    'http://127.0.0.1:5173',
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:5000'
+  ];
+
+  return (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, curl, server-to-server)
+    if (!origin) return callback(null, true);
+
+    const cleanOrigin = origin.replace(/\/$/, '');
+
+    if (
+      envOrigins.includes(cleanOrigin) ||
+      localOrigins.includes(cleanOrigin) ||
+      cleanOrigin.endsWith('.vercel.app')
+    ) {
+      return callback(null, true);
+    }
+
+    return callback(null, true);
+  };
+};
 
 app.use(cors({
-  origin: allowedOrigins,
+  origin: getCorsOrigins(),
   methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 }));
+
 app.use(express.json());
 
 // Root endpoint for Render deployment health check
@@ -39,9 +74,9 @@ app.get('/api/health', (req, res) => {
 app.use('/api/contact', contactRoutes);
 
 // Server startup
-app.listen(PORT, async () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`\n==================================================`);
-  console.log(`Takshara Backend Server running on http://localhost:${PORT}`);
+  console.log(`Takshara Backend Server running on port ${PORT}`);
   console.log(`Enquiries recipient email: ${RECIPIENT_EMAIL}`);
 
   if (process.env.SMTP_USER && process.env.SMTP_PASS) {
