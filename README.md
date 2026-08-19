@@ -16,7 +16,14 @@ Takshara_website/
 │   └── postcss.config.js
 │
 ├── backend/           # Express + Nodemailer Contact API
-│   ├── server.js
+│   ├── src/
+│   │   ├── server.js
+│   │   ├── routes/
+│   │   │   └── contact.routes.js
+│   │   ├── controllers/
+│   │   │   └── contact.controller.js
+│   │   └── services/
+│   │       └── email.service.js
 │   ├── package.json
 │   ├── .env           (git ignored - configure SMTP credentials here)
 │   └── .env.example
