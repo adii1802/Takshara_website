@@ -1,28 +1,53 @@
 import nodemailer from 'nodemailer';
+import dns from 'dns';
 
 const getRecipientEmail = () => process.env.EMAIL_TO || 'business@taksharatechnologies.com';
 
-const createTransporter = (overridePort = null) => {
+// Custom DNS lookup that explicitly forces IPv4 (family: 4)
+// This prevents ENETUNREACH errors on cloud platforms like Render where IPv6 egress is disabled
+const customIPv4Lookup = (hostname, options, callback) => {
+  return dns.lookup(hostname, { ...options, family: 4 }, callback);
+};
+
+const createTransporter = (overridePort = null, useGmailService = false) => {
   if (process.env.SMTP_USER && process.env.SMTP_PASS) {
-    const rawPort = overridePort || Number(process.env.SMTP_PORT) || 587;
-    const port = rawPort;
+    if (useGmailService) {
+      return nodemailer.createTransport({
+        service: 'gmail',
+        lookup: customIPv4Lookup,
+        family: 4,
+        connectionTimeout: 15000,
+        greetingTimeout: 15000,
+        socketTimeout: 20000,
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS,
+        },
+        tls: {
+          rejectUnauthorized: false,
+        },
+      });
+    }
+
+    const host = process.env.SMTP_HOST || 'smtp.gmail.com';
+    const port = overridePort || Number(process.env.SMTP_PORT) || 587;
     const secure = port === 465;
 
     return nodemailer.createTransport({
-      host: process.env.SMTP_HOST || 'smtp.gmail.com',
+      host: host,
       port: port,
       secure: secure,
-      family: 4, // Prefer IPv4 to prevent ENETUNREACH errors on cloud hosting (Render)
-      connectionTimeout: 10000, // 10s connection timeout
-      greetingTimeout: 10000,
-      socketTimeout: 15000,
+      lookup: customIPv4Lookup,
+      family: 4,
+      connectionTimeout: 15000,
+      greetingTimeout: 15000,
+      socketTimeout: 20000,
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
       },
       tls: {
         rejectUnauthorized: false,
-        ciphers: 'SSLv3',
       },
     });
   }
@@ -69,20 +94,24 @@ ${message}
     `,
   };
 
-  let transporter = createTransporter();
   let info;
+  let transporter;
 
+  // Try sending via primary transporter (explicit port 587/465 with forced IPv4)
   try {
+    transporter = createTransporter();
     info = await transporter.sendMail(mailOptions);
   } catch (primaryErr) {
-    // Fallback: If port 465 timed out or failed on Render, retry automatically using port 587
-    if (primaryErr.code === 'ETIMEDOUT' || primaryErr.code === 'ESOCKET' || primaryErr.command === 'CONN') {
-      console.warn('[Contact Form] Primary SMTP connection failed. Retrying with fallback port 587 (STARTTLS)...');
-      const fallbackTransporter = createTransporter(587);
-      info = await fallbackTransporter.sendMail(mailOptions);
-      transporter = fallbackTransporter;
-    } else {
-      throw primaryErr;
+    console.warn(`[Contact Form SMTP Warning]: Primary connection failed (${primaryErr.message}). Retrying with fallback configuration...`);
+    try {
+      // Retry Strategy 1: Explicit port 587 STARTTLS with forced IPv4
+      transporter = createTransporter(587, false);
+      info = await transporter.sendMail(mailOptions);
+    } catch (fallbackErr) {
+      console.warn(`[Contact Form SMTP Warning]: Fallback port 587 failed (${fallbackErr.message}). Retrying with Gmail service configuration...`);
+      // Retry Strategy 2: Built-in Nodemailer Gmail service with forced IPv4
+      transporter = createTransporter(null, true);
+      info = await transporter.sendMail(mailOptions);
     }
   }
 
