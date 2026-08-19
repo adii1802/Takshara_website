@@ -1,11 +1,11 @@
 {
   "name": "takshara-contact-api",
   "version": "1.0.0",
-  "main": "src/server.js",
+  "main": "server.js",
   "type": "module",
   "scripts": {
-    "start": "node src/server.js",
-    "dev": "node src/server.js"
+    "start": "node server.js",
+    "dev": "node server.js"
   },
   "dependencies": {
     "cors": "^2.8.6",

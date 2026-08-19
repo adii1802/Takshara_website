@@ -9,6 +9,7 @@ const createTransporter = () => {
       host: process.env.SMTP_HOST || 'smtp.gmail.com',
       port: port,
       secure: port === 465, // true for port 465, false for port 587 / 25
+      family: 4, // Force IPv4 to prevent ENETUNREACH errors on cloud hosting (Render)
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
