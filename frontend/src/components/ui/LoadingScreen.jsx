@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import logoImg from '../../assets/image.png';
 
 /**
- * Light-Themed Translucent Page Overlay featuring Takshara Logo
+ * Light-Themed Translucent Page Overlay featuring Cairnloop Technologies Logo
  * 
  * Provides a clean, elegant light-mode frosted glass transition overlay
- * with the Takshara logo when refreshing the page or switching routes.
+ * with the Cairnloop logo when refreshing the page or switching routes.
  */
 export default function LoadingScreen({ isVisible = true, onComplete }) {
   const [rendered, setRendered] = useState(isVisible);
@@ -61,48 +62,22 @@ export default function LoadingScreen({ isVisible = true, onComplete }) {
         <div className="relative mb-5 flex items-center justify-center">
           <div className="absolute -inset-3 rounded-2xl bg-gradient-to-r from-blue-400/25 via-cyan-400/25 to-blue-600/25 blur-md animate-pulse" />
 
-          <div className="relative w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center p-3 bg-white rounded-2xl border border-blue-100 shadow-md shadow-blue-500/10">
-            {/* Custom Takshara Ribbon 'T' Logo SVG */}
-            <svg
-              viewBox="0 0 200 200"
-              className="w-full h-full drop-shadow-[0_4px_12px_rgba(0,61,155,0.25)]"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <defs>
-                <linearGradient id="t-stem-gradient-light" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#003d9b" />
-                  <stop offset="50%" stopColor="#0052cc" />
-                  <stop offset="100%" stopColor="#0066ff" />
-                </linearGradient>
-
-                <linearGradient id="t-wing-gradient-light" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#00c6ff" />
-                  <stop offset="50%" stopColor="#0072ff" />
-                  <stop offset="100%" stopColor="#003d9b" />
-                </linearGradient>
-
-                <linearGradient id="t-top-gradient-light" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#001848" />
-                  <stop offset="100%" stopColor="#0040a2" />
-                </linearGradient>
-              </defs>
-
-              <path d="M 30 35 H 125 L 105 65 H 30 Z" fill="url(#t-top-gradient-light)" />
-              <path d="M 68 65 L 100 65 L 100 170 L 68 185 Z" fill="url(#t-stem-gradient-light)" />
-              <path d="M 135 35 L 175 35 L 108 160 L 108 115 Z" fill="url(#t-wing-gradient-light)" />
-              <path d="M 108 65 L 135 35 L 108 115 Z" fill="#001848" opacity="0.4" />
-            </svg>
+          <div className="relative w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center p-2 bg-white rounded-2xl border border-blue-100 shadow-md shadow-blue-500/10 overflow-hidden">
+            <img
+              src={logoImg}
+              alt="Cairnloop Technologies"
+              className="w-full h-full object-contain rounded-xl"
+            />
           </div>
         </div>
 
         {/* Brand Typography (Light Mode Slate & Primary Blue) */}
         <div className="text-center space-y-1">
           <h2 className="text-xl sm:text-2xl font-extrabold tracking-widest text-slate-900 font-headline-md">
-            TAKSHARA
+            CAIRNLOOP
           </h2>
           <p className="text-[11px] font-bold tracking-[0.25em] text-primary uppercase">
-            Fintech Infrastructure
+            Payments &amp; Financial Infrastructure
           </p>
         </div>
 

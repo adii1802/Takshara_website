@@ -114,7 +114,7 @@ export default function Services() {
               Industries We Serve &amp; Trusted Partners
             </h1>
             <p className="font-body-lg text-base md:text-lg text-on-surface-variant leading-relaxed">
-              Explore how Takshara Technologies powers growth across key business verticals—delivering tailored payment infrastructure, automated payouts, and verification tools for leading enterprise firms.
+              Explore how Cairnloop Technologies powers growth across key business verticals—delivering tailored payment infrastructure, automated payouts, and verification tools for leading enterprise firms.
             </p>
 
             {/* Search & Filter Bar */}
@@ -284,7 +284,7 @@ export default function Services() {
               Don't see your industry listed?
             </h2>
             <p className="font-body-lg text-primary-fixed text-sm md:text-base">
-              Takshara Technologies engineers custom fintech and enterprise infrastructure tailored to any complex vertical.
+              Cairnloop Technologies engineers custom fintech and enterprise infrastructure tailored to any complex vertical.
             </p>
           </div>
           <Link

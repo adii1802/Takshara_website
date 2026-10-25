@@ -1,0 +1,12 @@
+{
+  "name": "cairnloop-technologies",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Fullstack repository for Cairnloop Technologies website",
+  "scripts": {
+    "dev:frontend": "npm run dev --prefix frontend",
+    "dev:backend": "npm run dev --prefix backend",
+    "build:frontend": "npm run build --prefix frontend",
+    "install:all": "npm install --prefix backend && npm install --prefix frontend"
+  }
+}

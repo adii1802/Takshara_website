@@ -12,13 +12,13 @@ export default function Developer() {
   const [copiedSec, setCopiedSec] = useState(false);
 
   const codeSnippets = {
-    javascript: `// Initialize Takshara SDK
-import { Takshara } from '@takshara/sdk';
+    javascript: `// Initialize Cairnloop SDK
+import { Cairnloop } from '@cairnloop/sdk';
 
-const takshara = new Takshara('${pubKey}');
+const cairnloop = new Cairnloop('${pubKey}');
 
 // Create a payment order
-const order = await takshara.orders.create({
+const order = await cairnloop.orders.create({
   amount: 5000, // Amount in paise (₹50.00)
   currency: 'INR',
   receipt: 'order_rcptid_11',
@@ -30,10 +30,10 @@ const order = await takshara.orders.create({
 
 console.log('Order ID:', order.id);`,
 
-    python: `# Initialize Takshara Client
-import takshara
+    python: `# Initialize Cairnloop Client
+import cairnloop
 
-client = takshara.Client(api_key="${pubKey}")
+client = cairnloop.Client(api_key="${pubKey}")
 
 # Create a payment order
 order = client.orders.create({
@@ -49,7 +49,7 @@ order = client.orders.create({
 print("Order Created:", order["id"])`,
 
     curl: `# Create Payment Order via REST API
-curl -X POST https://api.takshara.com/v1/orders \\
+curl -X POST https://api.cairnloop.com/v1/orders \\
   -u ${pubKey}: \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -62,11 +62,11 @@ curl -X POST https://api.takshara.com/v1/orders \\
     }
   }'`,
 
-    java: `// Initialize Takshara Java SDK
-import com.takshara.TaksharaClient;
-import com.takshara.models.Order;
+    java: `// Initialize Cairnloop Java SDK
+import com.cairnloop.CairnloopClient;
+import com.cairnloop.models.Order;
 
-TaksharaClient client = new TaksharaClient("${pubKey}");
+CairnloopClient client = new CairnloopClient("${pubKey}");
 
 OrderRequest request = OrderRequest.builder()
     .amount(5000L)
@@ -106,7 +106,7 @@ System.out.println("Order ID: " + order.getId());`
                 Developer Portal & API Hub
               </div>
               <h1 className="font-headline-lg text- headline-lg text-on-surface mb-4">
-                Build & Scale Faster with Takshara APIs
+                Build & Scale Faster with Cairnloop APIs
               </h1>
               <p className="font-body-lg text-body-lg text-on-surface-variant mb-6">
                 Clean REST APIs, robust webhooks, and production-ready SDKs designed for modern engineering teams. Integrate payments in minutes.
@@ -324,7 +324,7 @@ System.out.println("Order ID: " + order.getId());`
                       <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f56] inline-block" />
                       <span className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e] inline-block" />
                       <span className="w-2.5 h-2.5 rounded-full bg-[#27c93f] inline-block" />
-                      <span className="ml-2 text-[9px] text-slate-500 font-sans">takshara_checkout.js</span>
+                      <span className="ml-2 text-[9px] text-slate-500 font-sans">cairnloop_checkout.js</span>
                     </div>
                     {/* Code Editor Body */}
                     <div className="p-3 leading-relaxed tracking-wide">
@@ -333,7 +333,7 @@ System.out.println("Order ID: " + order.getId());`
                         <span className="text-[#8be9fd]">payment</span>{' '}
                         <span className="text-slate-400">=</span>{' '}
                         <span className="text-[#ff79c6]">await</span>{' '}
-                        <span className="text-[#50fa7b]">takshara</span>
+                        <span className="text-[#50fa7b]">cairnloop</span>
                         <span className="text-slate-300">.</span>
                         <span className="text-[#50fa7b]">orders</span>
                         <span className="text-slate-300">.</span>
@@ -384,7 +384,7 @@ System.out.println("Order ID: " + order.getId());`
                     <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                       <div className="flex items-center gap-1.5">
                         <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                        <span className="text-[10px] font-bold text-slate-800">Takshara Dashboard</span>
+                        <span className="text-[10px] font-bold text-slate-800">Cairnloop Dashboard</span>
                       </div>
                       <span className="text-[8px] bg-emerald-100 text-emerald-700 font-semibold px-1.5 py-0.5 rounded">LIVE</span>
                     </div>
@@ -435,7 +435,7 @@ System.out.println("Order ID: " + order.getId());`
               Interactive Code Snippets
             </h2>
             <p className="font-body-md text-body-md text-on-surface-variant">
-              Integrate Takshara in your preferred programming language with zero friction.
+              Integrate Cairnloop in your preferred programming language with zero friction.
             </p>
           </div>
 

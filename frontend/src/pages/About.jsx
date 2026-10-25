@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import mapOfTakshara from '../assets/mapOf_takshara.png';
+import officeMap from '../assets/mapOf_takshara.png';
 
 function Counter({ target, suffix = "+" }) {
   const [count, setCount] = useState(0);
@@ -75,7 +75,7 @@ function MissionVisionHero() {
           </h2>
 
           <p className="text-base md:text-lg text-slate-300 font-normal leading-relaxed max-w-2xl mb-10 lg:mb-12">
-            Takshara is building modern financial technology solutions that simplify digital payments, automate payouts, and help businesses scale with confidence.
+            Cairnloop Technologies builds modern payment and payout infrastructure that helps businesses simplify transactions, streamline operations, and scale with confidence.
           </p>
         </div>
 
@@ -150,7 +150,7 @@ export default function About() {
             </div>
             <div className="col-span-1 lg:col-span-4">
               <p className="font-body-lg text-body-lg text-on-surface-variant max-w-md">
-                Takshara Technologies is a premier IT consulting and services firm dedicated to transforming businesses through innovative technology solutions.
+                Cairnloop Technologies builds modern payment and payout infrastructure that helps businesses simplify transactions, streamline operations, and scale with confidence.
               </p>
             </div>
           </div>
@@ -184,8 +184,8 @@ export default function About() {
             {/* Visual / Map Card */}
             <div className="col-span-2 lg:col-span-2 bg-surface p-base rounded-xl overflow-hidden relative min-h-[160px]">
               <img
-                src={mapOfTakshara}
-                alt="Takshara Global Office Map"
+                src={officeMap}
+                alt="Cairnloop Global Office Map"
                 className="absolute inset-0 w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-r from-surface-container-lowest/90 to-transparent p-gutter flex flex-col justify-end">

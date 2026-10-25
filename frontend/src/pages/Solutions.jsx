@@ -16,7 +16,7 @@ export default function Solutions() {
 
             <h1 className="font-headline-lg text-headline-lg text-on-surface mb-6">Transforming Complexity into Capability</h1>
             <p className="font-body-lg text-body-lg text-on-surface-variant mb-10 max-w-2xl">
-              At Takshara Technologies, we architect scalable, secure, and intelligent solutions designed to modernize your infrastructure and accelerate your digital journey.
+              At Cairnloop Technologies, we build modern payment and payout infrastructure that helps businesses simplify transactions, streamline operations, and scale with confidence.
             </p>
             <div className="flex flex-wrap gap-4">
               <Link to="/services" className="px-8 py-3 bg-primary text-on-primary font-label-md text-label-md rounded-lg shadow-md hover:bg-primary-container transition-all hover:shadow-lg hover:-translate-y-0.5">

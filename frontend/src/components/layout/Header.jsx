@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import logoTak from '../../assets/logo_tak.png';
+import logoImg from '../../assets/image.png';
 
 export default function Header({ onLogoClick }) {
   const location = useLocation();
@@ -17,13 +17,15 @@ export default function Header({ onLogoClick }) {
   return (
     <header className="fixed top-0 w-full z-50 bg-surface-container-lowest/80 backdrop-blur-md">
       <div className="h-16 w-full mx-auto px-margin-mobile lg:px-margin-desktop flex items-center justify-between">
-        <Link to="/" onClick={onLogoClick} className="flex items-center gap-base">
+        <Link to="/" onClick={onLogoClick} className="flex items-center gap-base group">
           <img
-            alt="Takshara Technologies"
-            className="h-8 w-auto object-contain rounded"
-            src={logoTak}
+            alt="Cairnloop Technologies"
+            className="h-10 w-10 object-contain rounded-lg shadow-xs group-hover:scale-105 transition-transform"
+            src={logoImg}
           />
-          <span className="font-headline-md text-headline-md text-on-surface">Takshara</span>
+          <span className="font-headline-md text-headline-md text-on-surface font-semibold tracking-tight">
+            Cairnloop
+          </span>
         </Link>
         <nav className="hidden lg:flex items-center gap-gutter">
           {navItems.map((item) => {

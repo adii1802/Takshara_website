@@ -50,7 +50,7 @@ function MainApp() {
   return (
     <>
       <ScrollToTop />
-      {/* Translucent Page Overlay with Takshara Logo */}
+      {/* Translucent Page Overlay with Cairnloop Technologies Logo */}
       <LoadingScreen isVisible={isLoading} />
 
       <div className="min-h-screen flex flex-col bg-background font-body-md text-on-background">

@@ -7,7 +7,7 @@ dotenv.config();
 
 const app = express();
 const PORT = process.process?.env?.PORT || process.env.PORT || 5000;
-const RECIPIENT_EMAIL = process.env.EMAIL_TO || 'business@taksharatechnologies.com';
+const RECIPIENT_EMAIL = process.env.EMAIL_TO || 'Contact@cairnlooptechnologies.com';
 
 // Dynamic CORS configuration for production (Render + Vercel) and local dev
 const getCorsOrigins = () => {
@@ -59,7 +59,7 @@ app.use(express.json());
 // Root endpoint for Render deployment health check
 app.get('/', (req, res) => {
   res.json({
-    service: 'Takshara Contact API',
+    service: 'Cairnloop Contact API',
     status: 'Active',
     timestamp: new Date().toISOString()
   });
@@ -76,7 +76,7 @@ app.use('/api/contact', contactRoutes);
 // Server startup
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`\n==================================================`);
-  console.log(`Takshara Backend Server running on port ${PORT}`);
+  console.log(`Cairnloop Backend Server running on port ${PORT}`);
   console.log(`Enquiries recipient email: ${RECIPIENT_EMAIL}`);
 
   if (process.env.SMTP_USER && process.env.SMTP_PASS) {

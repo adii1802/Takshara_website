@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import airVideo from '../assets/can_u_able_to_see_video_of_air.mp4';
-import taksharaVideo from '../assets/for_Takshara_Technologies_and.mp4';
-import mapOfTakshara from '../assets/mapOf_takshara.png';
+import showcaseVideo from '../assets/gemini_generated_video_41a99648.mp4';
+import networkMap from '../assets/mapOf_takshara.png';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('accept');
@@ -13,10 +13,10 @@ export default function Home() {
       <section className="w-full max-w-max mx-auto px-margin-mobile lg:px-margin-desktop py-margin-desktop flex flex-col lg:flex-row items-center gap-gutter">
         <div className="flex-1 flex flex-col items-start gap-gutter z-10">
           <h1 className="font-headline-lg text-headline-lg text-on-background max-w-2xl">
-            <span className="text-primary">India’s Trusted Payment &amp; Payout Infrastructure.</span>
+            <span className="text-primary">Powering the Future of Digital Payments.</span>
           </h1>
           <p className="font-body-lg text-body-lg text-on-surface-variant max-w-xl">
-            Takshara Technologies delivers scalable, secure, and intelligent infrastructure to accelerate your digital transformation and drive sustainable business growth.
+            Cairnloop Technologies builds modern payment and payout infrastructure that helps businesses simplify transactions, streamline operations, and scale with confidence.
           </p>
           <div className="flex flex-wrap items-center gap-base pt-base">
             <Link to="/solutions" className="px-gutter py-3 bg-primary text-on-primary font-label-md text-label-md rounded-lg shadow-md hover:bg-primary-container transition-all hover:shadow-lg hover:-translate-y-0.5">
@@ -221,7 +221,7 @@ export default function Home() {
           <span className="font-label-md text-label-md text-primary tracking-widest uppercase">Our Capabilities</span>
           <h2 className="font-headline-lg text-headline-lg text-on-surface">Architecting the Future</h2>
           <p className="font-body-lg text-body-lg text-on-surface-variant">
-            Comprehensive technology stacks designed to scale with your ambition. Explore the core pillars of Takshara Technologies.
+            Comprehensive technology stacks designed to scale with your ambition. Explore the core pillars of Cairnloop Technologies.
           </p>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-gutter auto-rows-[400px]">
@@ -295,7 +295,7 @@ export default function Home() {
               </Link>
             </div>
             <div className="flex-1 min-h-[250px] relative">
-              <img src={mapOfTakshara} alt="Takshara Global Infrastructure" className="w-full h-full object-cover" />
+              <img src={networkMap} alt="Cairnloop Global Infrastructure" className="w-full h-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-r from-surface-container-lowest via-surface-container-lowest/40 to-transparent"></div>
             </div>
           </div>
@@ -311,10 +311,10 @@ export default function Home() {
               Platform Showcase
             </span>
             <h2 className="font-headline-lg text-2xl md:text-3xl font-bold text-on-surface">
-              Empowering the Future of Digital Payments
+              Powering the Future of Digital Payments
             </h2>
             <p className="font-body-lg text-on-surface-variant text-sm md:text-base">
-              Explore how Takshara Technologies powers high-volume, secure fintech operations with next-gen payments infrastructure.
+              Explore how Cairnloop Technologies powers high-volume, secure fintech operations with next-gen payments infrastructure.
             </p>
           </div>
 
@@ -327,7 +327,7 @@ export default function Home() {
               loop
               playsInline
               className="w-full h-full object-cover rounded-2xl"
-              src={taksharaVideo}
+              src={showcaseVideo}
             />
           </div>
         </div>
@@ -344,7 +344,7 @@ export default function Home() {
           <div className="flex flex-col gap-base relative z-10 max-w-2xl">
             <h2 className="font-headline-lg text-headline-lg">Ready to upgrade your enterprise?</h2>
             <p className="font-body-lg text-body-lg text-primary-fixed">
-              Join thousands of forward-thinking companies powered by Takshara Technologies. Start your free consultation today.
+              Join thousands of forward-thinking companies powered by Cairnloop Technologies. Start your free consultation today.
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-base relative z-10 w-full md:w-auto">

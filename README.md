@@ -1,14 +1,18 @@
-# Takshara Website & Email API
+# CAIRNLOOP TECHNOLOGIES Website & API
 
-Fullstack repository for the Takshara Technologies website, structured into separate `frontend/` and `backend/` services.
+Fullstack repository for the Cairnloop Technologies website, structured into separate `frontend/` and `backend/` services.
+
+> **Primary Tagline:** Powering the Future of Digital Payments.  
+> **Supporting Description:** Cairnloop Technologies builds modern payment and payout infrastructure that helps businesses simplify transactions, streamline operations, and scale with confidence.
 
 ## Project Structure
 
 ```text
-Takshara_website/
+cairnloop-website/
 ├── frontend/          # React + Vite + Tailwind CSS Frontend
 │   ├── src/
 │   ├── public/
+│   │   └── image.png  # Cairnloop Technologies Logo
 │   ├── index.html
 │   ├── package.json
 │   ├── vite.config.js
@@ -27,33 +31,28 @@ Takshara_website/
 │   ├── .env           (git ignored - configure SMTP credentials here)
 │   └── .env.example
 │
+├── package.json       # Root scripts
 ├── .gitignore
 └── README.md
 ```
 
 ## Getting Started
 
-### 1. Backend Setup
-```bash
-cd backend
-npm install
-# Ensure backend/.env contains your SMTP credentials:
-# SMTP_HOST=smtp.gmail.com
-# SMTP_PORT=587
-# SMTP_USER=your-email@example.com
-# SMTP_PASS=your-app-password
-
-npm start
-```
-*Backend API will run on `http://localhost:5000`.*
-
-### 2. Frontend Setup
+### 1. Frontend Setup
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 *Frontend app will run on `http://localhost:5173`.*
+
+### 2. Backend Setup
+```bash
+cd backend
+npm install
+npm start
+```
+*Backend API will run on `http://localhost:5000`.*
 
 ---
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import logoTak from '../../assets/logo_tak.png';
+import logoImg from '../../assets/image.png';
 
 export default function Footer() {
   return (
@@ -11,14 +11,14 @@ export default function Footer() {
           <div className="flex flex-col gap-gutter lg:col-span-1">
             <div className="flex items-center gap-base">
               <img
-                alt="Takshara Technologies"
-                className="h-7 w-auto object-contain rounded"
-                src={logoTak}
+                alt="Cairnloop Technologies"
+                className="h-9 w-9 object-contain rounded-lg shadow-xs"
+                src={logoImg}
               />
-              <span className="font-headline-md text-headline-md text-on-surface font-bold">Takshara</span>
+              <span className="font-headline-md text-headline-md text-on-surface font-bold">Cairnloop</span>
             </div>
             <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed">
-              India’s trusted payment &amp; payout infrastructure. Empowering modern enterprises through digital excellence.
+              Powering the Future of Digital Payments. India’s trusted payment &amp; payout infrastructure.
             </p>
           </div>
 
@@ -119,7 +119,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="pt-gutter border-t border-outline-variant flex flex-col md:flex-row justify-between items-center gap-base">
           <p className="font-label-sm text-label-sm text-outline">
-            © {new Date().getFullYear()} Takshara Technologies. All rights reserved.
+            © {new Date().getFullYear()} Cairnloop Technologies. All rights reserved.
           </p>
           <div className="flex gap-gutter">
             <a className="text-label-sm text-outline hover:text-on-surface transition-colors" href="#">Privacy Policy</a>

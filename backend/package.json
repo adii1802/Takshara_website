@@ -1,5 +1,5 @@
 {
-  "name": "takshara-contact-api",
+  "name": "cairnloop-contact-api",
   "version": "1.0.0",
   "main": "server.js",
   "type": "module",

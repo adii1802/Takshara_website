@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer';
 import dns from 'dns';
 
-const getRecipientEmail = () => process.env.EMAIL_TO || 'business@taksharatechnologies.com';
+const getRecipientEmail = () => process.env.EMAIL_TO || 'Contact@cairnlooptechnologies.com';
 
 // Custom DNS lookup that explicitly forces IPv4 (family: 4)
 // This prevents ENETUNREACH errors on cloud platforms like Render where IPv6 egress is disabled
@@ -69,7 +69,7 @@ export const sendContactEmail = async (contactData) => {
     replyTo: `"${firstName} ${lastName}" <${email}>`,
     subject: `New Website Enquiry from ${firstName} ${lastName}`,
     text: `
-New Enquiry from Takshara Technologies Website:
+New Enquiry from Cairnloop Technologies Website:
 
 Name: ${firstName} ${lastName}
 Business Email: ${email}
@@ -121,12 +121,12 @@ ${message}
   if (process.env.SMTP_USER && process.env.SMTP_PASS && email) {
     try {
       const autoReplyOptions = {
-        from: `"Takshara Technologies" <${process.env.SMTP_USER}>`,
+        from: `"Cairnloop Technologies" <${process.env.SMTP_USER}>`,
         to: email,
-        subject: `Thank you for contacting Takshara Technologies`,
+        subject: `Thank you for contacting Cairnloop Technologies`,
         text: `Dear ${firstName} ${lastName},
 
-Thank you for reaching out to Takshara Technologies. We have received your message regarding "${inquiryType || 'General Inquiry'}".
+Thank you for reaching out to Cairnloop Technologies. We have received your message regarding "${inquiryType || 'General Inquiry'}".
 
 Our team is reviewing your inquiry and will get back to you as soon as possible (typically within 24 business hours).
 
@@ -139,13 +139,13 @@ Summary of your message:
 If you have any urgent questions, feel free to reply directly to this email or call us at +91 7089185703.
 
 Best regards,
-Takshara Technologies Team
-business@taksharatechnologies.com`,
+Cairnloop Technologies Team
+Contact@cairnlooptechnologies.com`,
         html: `
           <div style="font-family: Arial, sans-serif; font-size: 15px; color: #222222; line-height: 1.6; max-width: 600px;">
             <p>Dear <strong>${firstName} ${lastName}</strong>,</p>
             
-            <p>Thank you for reaching out to Takshara Technologies. We have received your message regarding <strong>${inquiryType || 'General Inquiry'}</strong>.</p>
+            <p>Thank you for reaching out to Cairnloop Technologies. We have received your message regarding <strong>${inquiryType || 'General Inquiry'}</strong>.</p>
             
             <p>Our team is reviewing your inquiry and will get back to you as soon as possible (typically within 24 business hours).</p>
             
@@ -163,8 +163,8 @@ business@taksharatechnologies.com`,
             
             <br />
             <p style="margin: 0;">Best regards,</p>
-            <p style="margin: 0; font-weight: bold;">Takshara Technologies Team</p>
-            <p style="margin: 0; color: #666666;">business@taksharatechnologies.com</p>
+            <p style="margin: 0; font-weight: bold;">Cairnloop Technologies Team</p>
+            <p style="margin: 0; color: #666666;">Contact@cairnlooptechnologies.com</p>
           </div>
         `,
       };
