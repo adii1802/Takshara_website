@@ -25,9 +25,12 @@ const server = app.listen(PORT, '0.0.0.0', async () => {
     console.log(`• SMTP Status:           🟢 ${smtpStatus.message}`);
   } else {
     console.log(`• SMTP Status:           ⚠️  ${smtpStatus.message}`);
-    console.log(`\n💡 Setup Instructions:`);
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`• Dev Mode Fallback:     🟢 Active (inquiries will log to console without throwing errors)`);
+    }
+    console.log(`\n💡 Setup Instructions for Live Delivery:`);
     console.log(`   1. Open 'backend/.env'`);
-    console.log(`   2. Set SMTP_USER=your-email@yourdomain.com (your Hostinger business email)`);
+    console.log(`   2. Set SMTP_USER=contact@cairnlooptechnologies.com`);
     console.log(`   3. Set SMTP_PASS=your-hostinger-password`);
     console.log(`   4. Set CONTACT_TO=${RECIPIENT_EMAIL}`);
   }

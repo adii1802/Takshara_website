@@ -94,7 +94,40 @@ export const sendContactEmail = async ({ fullName, email, company, service, mess
   const pass = process.env.SMTP_PASS?.trim();
   const recipient = (process.env.CONTACT_TO || process.env.EMAIL_TO || user)?.trim();
 
+  const cleanFullName = fullName?.trim() || 'Website Visitor';
+  const cleanEmail = email?.trim();
+  const cleanCompany = company?.trim() || 'Not specified';
+  const cleanService = service?.trim() || 'General Inquiry';
+  const cleanMessage = message?.trim();
+  const timestamp = new Date().toLocaleString('en-US', {
+    timeZone: 'UTC',
+    dateStyle: 'full',
+    timeStyle: 'long',
+  });
+
   if (!user || !pass) {
+    // In development (or when dev fallback is allowed), log the inquiry and simulate success
+    const isDev = process.env.NODE_ENV !== 'production' || process.env.ALLOW_DEV_FALLBACK === 'true';
+    if (isDev) {
+      console.log(`\n=============================================================`);
+      console.log(`[Contact Form — Dev Mode Fallback]`);
+      console.log(`Inquiry received successfully (SMTP_PASS not configured in backend/.env):`);
+      console.log(`• Timestamp:   ${timestamp}`);
+      console.log(`• Name:        ${cleanFullName}`);
+      console.log(`• Email:       ${cleanEmail}`);
+      console.log(`• Company:     ${cleanCompany}`);
+      console.log(`• Service:     ${cleanService}`);
+      console.log(`• Message:     ${cleanMessage}`);
+      console.log(`• Destination: ${recipient || 'contact@cairnlooptechnologies.com'}`);
+      console.log(`💡 To deliver real emails to ${recipient || 'contact@cairnlooptechnologies.com'}, configure SMTP_PASS in backend/.env.`);
+      console.log(`=============================================================\n`);
+
+      return {
+        messageId: `<dev-mock-${Date.now()}@localhost>`,
+        simulated: true,
+      };
+    }
+
     const missingErr = new Error('SMTP credentials are not configured on the server. Please set SMTP_USER and SMTP_PASS in backend/.env.');
     missingErr.code = 'SMTP_NOT_CONFIGURED';
     console.error(`[Hostinger SMTP Config Error]: ${missingErr.message}`);
@@ -112,17 +145,6 @@ export const sendContactEmail = async ({ fullName, email, company, service, mess
   if (!transporter) {
     throw new Error('Failed to create mail transporter.');
   }
-
-  const cleanFullName = fullName?.trim() || 'Website Visitor';
-  const cleanEmail = email?.trim();
-  const cleanCompany = company?.trim() || 'Not specified';
-  const cleanService = service?.trim() || 'General Inquiry';
-  const cleanMessage = message?.trim();
-  const timestamp = new Date().toLocaleString('en-US', {
-    timeZone: 'UTC',
-    dateStyle: 'full',
-    timeStyle: 'long',
-  });
 
   // Plain-text alternative
   const textContent = `
