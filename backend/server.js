@@ -1,89 +1,49 @@
-import express from 'express';
-import cors from 'cors';
 import dotenv from 'dotenv';
-import contactRoutes from './routes/contact.routes.js';
+import app from './src/app.js';
+import { verifySmtpConnection } from './src/services/email.service.js';
 
+// Load environment variables from backend/.env
 dotenv.config();
 
-const app = express();
-const PORT = process.process?.env?.PORT || process.env.PORT || 5000;
-const RECIPIENT_EMAIL = process.env.EMAIL_TO || 'Contact@cairnlooptechnologies.com';
+const PORT = process.env.PORT || 5000;
+const RECIPIENT_EMAIL = process.env.CONTACT_TO || process.env.EMAIL_TO || 'Contact@cairnlooptechnologies.com';
+const SMTP_HOST = process.env.SMTP_HOST || 'smtp.hostinger.com';
+const SMTP_PORT = process.env.SMTP_PORT || 465;
 
-// Dynamic CORS configuration for production (Render + Vercel) and local dev
-const getCorsOrigins = () => {
-  if (!process.env.FRONTEND_URL || process.env.FRONTEND_URL === '*') {
-    return '*';
+const server = app.listen(PORT, '0.0.0.0', async () => {
+  console.log(`\n=============================================================`);
+  console.log(`  Cairnloop Technologies — Contact API Backend`);
+  console.log(`=============================================================`);
+  console.log(`• Server running on:     http://localhost:${PORT}`);
+  console.log(`• Environment:           ${process.env.NODE_ENV || 'development'}`);
+  console.log(`• SMTP Host:             ${SMTP_HOST}:${SMTP_PORT} (SSL: ${process.env.SMTP_SECURE !== 'false'})`);
+  console.log(`• Inquiries Recipient:   ${RECIPIENT_EMAIL}`);
+
+  // Test Hostinger SMTP connection on startup
+  const smtpStatus = await verifySmtpConnection();
+  if (smtpStatus.connected) {
+    console.log(`• SMTP Status:           🟢 ${smtpStatus.message}`);
+  } else {
+    console.log(`• SMTP Status:           ⚠️  ${smtpStatus.message}`);
+    console.log(`\n💡 Setup Instructions:`);
+    console.log(`   1. Open 'backend/.env'`);
+    console.log(`   2. Set SMTP_USER=your-email@yourdomain.com (your Hostinger business email)`);
+    console.log(`   3. Set SMTP_PASS=your-hostinger-password`);
+    console.log(`   4. Set CONTACT_TO=${RECIPIENT_EMAIL}`);
   }
+  console.log(`=============================================================\n`);
+});
 
-  const envOrigins = process.env.FRONTEND_URL
-    .split(',')
-    .map(url => url.trim().replace(/\/$/, ''))
-    .filter(Boolean);
-
-  const localOrigins = [
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'http://localhost:5000',
-    'http://127.0.0.1:5173',
-    'http://127.0.0.1:3000',
-    'http://127.0.0.1:5000'
-  ];
-
-  return (origin, callback) => {
-    // Allow requests with no origin (like mobile apps, curl, server-to-server)
-    if (!origin) return callback(null, true);
-
-    const cleanOrigin = origin.replace(/\/$/, '');
-
-    if (
-      envOrigins.includes(cleanOrigin) ||
-      localOrigins.includes(cleanOrigin) ||
-      cleanOrigin.endsWith('.vercel.app')
-    ) {
-      return callback(null, true);
-    }
-
-    return callback(null, true);
-  };
+// Graceful shutdown handling
+const handleShutdown = (signal) => {
+  console.log(`\n[Server] Received ${signal}. Closing HTTP server...`);
+  server.close(() => {
+    console.log('[Server] HTTP server closed cleanly.');
+    process.exit(0);
+  });
 };
 
-app.use(cors({
-  origin: getCorsOrigins(),
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
-}));
+process.on('SIGINT', () => handleShutdown('SIGINT'));
+process.on('SIGTERM', () => handleShutdown('SIGTERM'));
 
-app.use(express.json());
-
-// Root endpoint for Render deployment health check
-app.get('/', (req, res) => {
-  res.json({
-    service: 'Cairnloop Contact API',
-    status: 'Active',
-    timestamp: new Date().toISOString()
-  });
-});
-
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', timestamp: new Date().toISOString() });
-});
-
-// Contact Form Routes
-app.use('/api/contact', contactRoutes);
-
-// Server startup
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`\n==================================================`);
-  console.log(`Cairnloop Backend Server running on port ${PORT}`);
-  console.log(`Enquiries recipient email: ${RECIPIENT_EMAIL}`);
-
-  if (process.env.SMTP_USER && process.env.SMTP_PASS) {
-    console.log(`Status: 🟢 Real SMTP Email Sending Enabled (${process.env.SMTP_USER})`);
-  } else {
-    console.log(`Status: ⚠️ Real SMTP Credentials Missing!`);
-    console.log(`👉 Form submissions will log to server console. To receive real emails in ${RECIPIENT_EMAIL}, set SMTP_USER and SMTP_PASS in your .env file.`);
-  }
-  console.log(`==================================================\n`);
-});
+export default server;
