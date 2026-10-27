@@ -72,10 +72,10 @@ export default function Contact() {
                     <div>
                       <h4 className="font-label-md text-label-md text-on-surface mb-1">Email</h4>
                       <a
-                        href="mailto:Contact@cairnlooptechnologies.com"
+                        href="mailto:contact@cairnlooptechnologies.com"
                         className="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors cursor-pointer"
                       >
-                        Contact@cairnlooptechnologies.com
+                        contact@cairnlooptechnologies.com
                       </a>
                       <p className="font-label-sm text-label-sm text-outline mt-1">We typically reply within 24 hours.</p>
                     </div>
