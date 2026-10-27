@@ -70,14 +70,17 @@ export default function ContactForm() {
 
     try {
       // Determine public backend API base URL using VITE_API_BASE_URL (with fallback to VITE_API_URL or localhost:5000)
-      const apiBase =
+      const rawBase = (
         import.meta.env.VITE_API_BASE_URL ||
         import.meta.env.VITE_API_URL ||
-        'http://localhost:5000';
+        'http://localhost:5000'
+      ).trim().replace(/\/+$/, '');
 
-      const endpoint = apiBase.endsWith('/api/contact')
-        ? apiBase
-        : `${apiBase.replace(/\/$/, '')}/api/contact`;
+      const endpoint = rawBase.endsWith('/api/contact')
+        ? rawBase
+        : rawBase.endsWith('/api')
+          ? `${rawBase}/contact`
+          : `${rawBase}/api/contact`;
 
       const payload = {
         fullName: `${formData.firstName.trim()} ${formData.lastName.trim()}`.trim(),

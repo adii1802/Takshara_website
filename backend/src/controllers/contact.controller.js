@@ -99,7 +99,7 @@ export const handleContactForm = async (req, res) => {
       });
     }
 
-    // 4. Send email through Hostinger SMTP
+    // 4. Send email through Resend HTTPS API
     await sendContactEmail({
       fullName: resolvedName,
       email: resolvedEmail,
@@ -114,10 +114,17 @@ export const handleContactForm = async (req, res) => {
     });
   } catch (error) {
     // Check specific configuration errors
-    if (error.code === 'SMTP_NOT_CONFIGURED') {
+    if (error.code === 'EMAIL_CONFIG_MISSING' || error.code === 'SMTP_NOT_CONFIGURED') {
       return res.status(503).json({
         success: false,
-        message: 'Email service is temporarily unavailable. Server SMTP credentials are not configured.',
+        message: 'Email service is temporarily unavailable. Server email credentials are not configured.',
+      });
+    }
+
+    if (error.code === 'EMAIL_DELIVERY_FAILED') {
+      return res.status(502).json({
+        success: false,
+        message: 'Failed to deliver message via email provider. Please try again later or contact us directly at contact@cairnlooptechnologies.com.',
       });
     }
 
@@ -130,7 +137,7 @@ export const handleContactForm = async (req, res) => {
 };
 
 /**
- * Endpoint to check Hostinger SMTP connectivity without leaking secrets
+ * Endpoint to check email delivery provider connectivity without leaking secrets
  */
 export const checkSmtpHealth = async (req, res) => {
   try {
@@ -138,22 +145,24 @@ export const checkSmtpHealth = async (req, res) => {
     if (result.connected) {
       return res.status(200).json({
         status: 'ready',
-        host: process.env.SMTP_HOST || 'smtp.hostinger.com',
-        port: parseInt(process.env.SMTP_PORT, 10) || 465,
-        secure: true,
+        provider: 'resend',
+        recipient: result.recipient,
+        sender: result.sender,
         message: result.message,
       });
     } else {
-      return res.status(503).json({
-        status: 'not_configured',
-        host: process.env.SMTP_HOST || 'smtp.hostinger.com',
+      return res.status(process.env.NODE_ENV === 'production' ? 503 : 200).json({
+        status: process.env.NODE_ENV === 'production' ? 'not_configured' : 'dev_mode',
+        provider: 'resend',
+        recipient: result.recipient,
+        sender: result.sender,
         message: result.message,
       });
     }
   } catch (err) {
     return res.status(500).json({
       status: 'error',
-      message: 'Failed to verify SMTP connection.',
+      message: 'Failed to verify email service configuration.',
     });
   }
 };

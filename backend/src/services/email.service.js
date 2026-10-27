@@ -1,98 +1,56 @@
-import nodemailer from 'nodemailer';
-import dns from 'dns';
+import { Resend } from 'resend';
 
-// Custom DNS lookup forcing IPv4 to prevent ENETUNREACH on platforms without IPv6 egress
-const customIPv4Lookup = (hostname, options, callback) => {
-  return dns.lookup(hostname, { ...options, family: 4 }, callback);
+/**
+ * Validates whether Resend is configured
+ */
+export const isResendConfigured = () => {
+  return Boolean(process.env.RESEND_API_KEY?.trim());
 };
 
 /**
- * Creates and configures the Nodemailer transporter for Hostinger SMTP
+ * Verifies Email Service configuration status without leaking keys
  */
-export const createTransporter = () => {
-  const host = process.env.SMTP_HOST || 'smtp.hostinger.com';
-  const port = parseInt(process.env.SMTP_PORT, 10) || 465;
-  const secure = process.env.SMTP_SECURE === 'false' ? false : (port === 465 || process.env.SMTP_SECURE === 'true');
+export const verifyEmailService = async () => {
+  const apiKey = process.env.RESEND_API_KEY?.trim();
+  const contactTo = (process.env.CONTACT_TO || process.env.EMAIL_TO || 'contact@cairnlooptechnologies.com')?.trim();
+  const contactFrom = (process.env.CONTACT_FROM || 'Cairnloop Technologies <contact@cairnlooptechnologies.com>')?.trim();
 
-  const user = process.env.SMTP_USER?.trim();
-  const pass = process.env.SMTP_PASS?.trim();
-
-  if (!user || !pass) {
-    return null;
-  }
-
-  return nodemailer.createTransport({
-    host,
-    port,
-    secure, // true for port 465 (SSL)
-    auth: {
-      user,
-      pass,
-    },
-    lookup: customIPv4Lookup,
-    family: 4,
-    connectionTimeout: 15000,
-    greetingTimeout: 15000,
-    socketTimeout: 20000,
-    tls: {
-      rejectUnauthorized: true,
-      minVersion: 'TLSv1.2',
-    },
-  });
-};
-
-/**
- * Verifies Hostinger SMTP connection status
- */
-export const verifySmtpConnection = async () => {
-  const user = process.env.SMTP_USER?.trim();
-  const pass = process.env.SMTP_PASS?.trim();
-
-  if (!user || !pass) {
+  if (!apiKey) {
     return {
       connected: false,
-      message: 'SMTP credentials missing. Please configure SMTP_USER and SMTP_PASS in backend/.env',
+      provider: 'resend',
+      message: 'RESEND_API_KEY missing. Please configure RESEND_API_KEY in environment variables.',
+      recipient: contactTo,
+      sender: contactFrom,
     };
   }
 
-  try {
-    const transporter = createTransporter();
-    if (!transporter) {
-      return {
-        connected: false,
-        message: 'Unable to initialize SMTP transporter.',
-      };
-    }
-
-    await transporter.verify();
-    return {
-      connected: true,
-      message: `Hostinger SMTP connection verified successfully for ${user}`,
-    };
-  } catch (error) {
-    // Sanitize error to avoid leaking credentials
-    const safeError = error.message || 'SMTP Authentication / Connection Error';
-    return {
-      connected: false,
-      message: `Hostinger SMTP connection failed: ${safeError}`,
-    };
-  }
+  return {
+    connected: true,
+    provider: 'resend',
+    message: 'Resend API key configured and ready for HTTPS delivery.',
+    recipient: contactTo,
+    sender: contactFrom,
+  };
 };
 
+// Backwards compatibility alias
+export const verifySmtpConnection = verifyEmailService;
+
 /**
- * Sends a contact inquiry email via Hostinger SMTP
+ * Sends a contact inquiry email via Resend's HTTPS API
  *
  * @param {Object} data
- * @param {string} data.fullName - Visitor's name
+ * @param {string} data.fullName - Visitor's full name
  * @param {string} data.email - Visitor's business email
  * @param {string} [data.company] - Visitor's company
  * @param {string} [data.service] - Service of interest / Inquiry type
- * @param {string} data.message - Inquiry message
+ * @param {string} data.message - Inquiry message content
  */
 export const sendContactEmail = async ({ fullName, email, company, service, message }) => {
-  const user = process.env.SMTP_USER?.trim();
-  const pass = process.env.SMTP_PASS?.trim();
-  const recipient = (process.env.CONTACT_TO || process.env.EMAIL_TO || user)?.trim();
+  const apiKey = process.env.RESEND_API_KEY?.trim();
+  const recipient = (process.env.CONTACT_TO || process.env.EMAIL_TO || 'contact@cairnlooptechnologies.com')?.trim();
+  const sender = (process.env.CONTACT_FROM || 'Cairnloop Technologies <contact@cairnlooptechnologies.com>')?.trim();
 
   const cleanFullName = fullName?.trim() || 'Website Visitor';
   const cleanEmail = email?.trim();
@@ -105,48 +63,46 @@ export const sendContactEmail = async ({ fullName, email, company, service, mess
     timeStyle: 'long',
   });
 
-  if (!user || !pass) {
-    // In development (or when dev fallback is allowed), log the inquiry and simulate success
+  // 1. Check if Resend API key is present
+  if (!apiKey) {
+    // In local development, simulate delivery if key is not yet set
     const isDev = process.env.NODE_ENV !== 'production' || process.env.ALLOW_DEV_FALLBACK === 'true';
     if (isDev) {
       console.log(`\n=============================================================`);
       console.log(`[Contact Form — Dev Mode Fallback]`);
-      console.log(`Inquiry received successfully (SMTP_PASS not configured in backend/.env):`);
+      console.log(`Inquiry received successfully (RESEND_API_KEY not configured):`);
       console.log(`• Timestamp:   ${timestamp}`);
       console.log(`• Name:        ${cleanFullName}`);
       console.log(`• Email:       ${cleanEmail}`);
       console.log(`• Company:     ${cleanCompany}`);
       console.log(`• Service:     ${cleanService}`);
       console.log(`• Message:     ${cleanMessage}`);
-      console.log(`• Destination: ${recipient || 'contact@cairnlooptechnologies.com'}`);
-      console.log(`💡 To deliver real emails to ${recipient || 'contact@cairnlooptechnologies.com'}, configure SMTP_PASS in backend/.env.`);
+      console.log(`• Target:      ${recipient}`);
+      console.log(`• Sender:      ${sender}`);
+      console.log(`💡 Note: Set RESEND_API_KEY in backend/.env for live Resend delivery.`);
       console.log(`=============================================================\n`);
 
       return {
-        messageId: `<dev-mock-${Date.now()}@localhost>`,
+        id: `simulated-dev-${Date.now()}`,
         simulated: true,
       };
     }
 
-    const missingErr = new Error('SMTP credentials are not configured on the server. Please set SMTP_USER and SMTP_PASS in backend/.env.');
-    missingErr.code = 'SMTP_NOT_CONFIGURED';
-    console.error(`[Hostinger SMTP Config Error]: ${missingErr.message}`);
+    const missingErr = new Error('Email service credentials are not configured on the server. Please set RESEND_API_KEY in Render environment variables.');
+    missingErr.code = 'EMAIL_CONFIG_MISSING';
+    console.error(`[Resend Config Error]: ${missingErr.message}`);
     throw missingErr;
   }
 
+  // 2. Validate recipient inbox configuration
   if (!recipient) {
     const recipientErr = new Error('Destination inbox (CONTACT_TO) is not configured.');
-    recipientErr.code = 'RECIPIENT_NOT_CONFIGURED';
-    console.error(`[Hostinger SMTP Config Error]: ${recipientErr.message}`);
+    recipientErr.code = 'EMAIL_CONFIG_MISSING';
+    console.error(`[Resend Config Error]: ${recipientErr.message}`);
     throw recipientErr;
   }
 
-  const transporter = createTransporter();
-  if (!transporter) {
-    throw new Error('Failed to create mail transporter.');
-  }
-
-  // Plain-text alternative
+  // 3. Construct plain-text email version
   const textContent = `
 New Website Inquiry — Cairnloop Technologies
 ==================================================
@@ -167,7 +123,7 @@ ${cleanMessage}
 * You can reply directly to this email to contact ${cleanFullName} (${cleanEmail}).
 `.trim();
 
-  // HTML email formatted with Cairnloop branding
+  // 4. Construct branded HTML email version
   const htmlContent = `
 <!DOCTYPE html>
 <html lang="en">
@@ -232,27 +188,44 @@ ${cleanMessage}
 </html>
 `.trim();
 
-  // IMPORTANT Hostinger & Security settings:
-  // - from: MUST be the authenticated Hostinger business email (SMTP_USER)
-  // - replyTo: Set to the visitor's email address so owner can reply directly
-  // - to: CONTACT_TO recipient inbox
-  const mailOptions = {
-    from: `"${cleanFullName} (via Cairnloop)" <${user}>`,
-    to: recipient,
-    replyTo: `"${cleanFullName}" <${cleanEmail}>`,
-    subject: `New Website Inquiry — Cairnloop Technologies (${cleanFullName})`,
-    text: textContent,
-    html: htmlContent,
-  };
+  // 5. Send through Resend HTTPS API
+  const resend = new Resend(apiKey);
 
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log(`[Hostinger SMTP] Email sent successfully to ${recipient} (Message ID: ${info.messageId})`);
-    return info;
-  } catch (error) {
-    console.error(`[Hostinger SMTP Send Error]:`, error.message);
-    const deliveryErr = new Error('Failed to deliver email through SMTP server.');
-    deliveryErr.originalCode = error.code;
-    throw deliveryErr;
+    const { data, error } = await resend.emails.send({
+      from: sender,
+      to: [recipient],
+      replyTo: cleanEmail,
+      subject: `New Website Inquiry — Cairnloop Technologies (${cleanFullName})`,
+      text: textContent,
+      html: htmlContent,
+    });
+
+    if (error) {
+      console.error(`[Resend API Error]: ${error.name || 'Error'} — ${error.message || 'Unknown error'}`);
+      const deliveryErr = new Error(error.message || 'Resend rejected email send request.');
+      deliveryErr.code = 'EMAIL_DELIVERY_FAILED';
+      deliveryErr.statusCode = error.statusCode || 502;
+      deliveryErr.details = error;
+      throw deliveryErr;
+    }
+
+    if (!data || !data.id) {
+      const emptyErr = new Error('Resend did not return a valid message ID.');
+      emptyErr.code = 'EMAIL_DELIVERY_FAILED';
+      throw emptyErr;
+    }
+
+    console.log(`[Resend] Email sent successfully to ${recipient} (Message ID: ${data.id})`);
+    return { id: data.id, simulated: false };
+  } catch (err) {
+    if (err.code === 'EMAIL_DELIVERY_FAILED') {
+      throw err;
+    }
+    console.error(`[Resend Network Error]: ${err.message}`);
+    const networkErr = new Error('Failed to deliver email through Resend API.');
+    networkErr.code = 'EMAIL_DELIVERY_FAILED';
+    networkErr.originalMessage = err.message;
+    throw networkErr;
   }
 };

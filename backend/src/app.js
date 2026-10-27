@@ -4,6 +4,17 @@ import contactRoutes from './routes/contact.routes.js';
 
 const app = express();
 
+// Configure proxy trust for Render reverse proxy (1 hop)
+// This resolves ERR_ERL_UNEXPECTED_X_FORWARDED_FOR without blindly trusting arbitrary client headers
+const trustProxySetting = process.env.TRUST_PROXY
+  ? (process.env.TRUST_PROXY === 'true'
+      ? true
+      : isNaN(process.env.TRUST_PROXY)
+        ? process.env.TRUST_PROXY
+        : Number(process.env.TRUST_PROXY))
+  : 1;
+app.set('trust proxy', trustProxySetting);
+
 // Configure CORS for local development and production deployments
 const configureCors = () => {
   const allowedOrigins = [
@@ -13,6 +24,8 @@ const configureCors = () => {
     'http://127.0.0.1:5173',
     'http://127.0.0.1:3000',
     'http://127.0.0.1:5000',
+    'https://cairnlooptechnologies.com',
+    'https://www.cairnlooptechnologies.com',
   ];
 
   if (process.env.FRONTEND_URL) {
@@ -33,15 +46,17 @@ const configureCors = () => {
       if (
         allowedOrigins.includes(cleanOrigin) ||
         cleanOrigin.endsWith('.vercel.app') ||
+        cleanOrigin.endsWith('cairnlooptechnologies.com') ||
         process.env.FRONTEND_URL === '*'
       ) {
         return callback(null, true);
       }
 
+      console.warn(`[CORS Blocked]: Origin ${origin} is not authorized`);
       return callback(new Error(`CORS blocked: Origin ${origin} is not authorized`));
     },
     methods: ['GET', 'POST', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
     credentials: true,
   });
 };
