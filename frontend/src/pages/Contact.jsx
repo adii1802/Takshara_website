@@ -58,7 +58,7 @@ export default function Contact() {
                     <div>
                       <h4 className="font-label-md text-label-md text-on-surface mb-1">Phone</h4>
                       <p className="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors cursor-pointer">
-                        +91 7089185703
+                        +91 9993634979
                       </p>
                       <p className="font-label-sm text-label-sm text-outline mt-1">Mon-Fri, 9am - 6pm PST</p>
                     </div>
